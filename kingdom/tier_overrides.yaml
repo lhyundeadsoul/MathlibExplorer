@@ -1,0 +1,37 @@
+# 人工大海拔(macro_tier)覆盖表 —— 目前为空。
+#
+# script/gen_kingdom.py 里的 macro_tier 是用图论启发式(统一广度 + 反向 PageRank)
+# 自动估算的,并不保证精确复现"数 -> 同余 -> 群 -> 环 -> 域 -> Galois -> 范畴"
+# 这类数学教学法叙事(细节和局限性见 kingdom/schema.md)。
+#
+# 以后如果想手工钦定某个具体概念该在第几层,在这里加一行:
+#
+#   Mathlib.Algebra.Group.Defs: 1
+#   Mathlib.FieldTheory.Galois.Basic: 4
+#
+# 键是完整的 mathlib 模块名,值是该模块所在区域里的目标 tier(从 0 开始,
+# 不能超过 regions.yaml 里对应区域的 tier_count - 1)。
+# gen_kingdom.py 读取这个文件时,任何在这里出现的节点都会跳过启发式计算,
+# 直接使用这里指定的值,并在输出的 kingdom_data.json 里把该节点的
+# macro_tier_override 字段设成这个值(而不是 null)。
+
+overrides:
+  # 代数山阶梯的第一轮人工校准:把 Group/Ring/Field 的基础定义压到阶梯低位,
+  # 把 Galois 理论簇整体抬到它们之上,修正启发式把"被广泛依赖的 Defs 文件"
+  # 误判为"最奠基"从而排到 Galois 之上的问题(具体案例见 kingdom/schema.md)。
+  # algebra 山脉 tier_count=6,合法取值 0..5。
+  Mathlib.Algebra.Group.Defs: 1
+  Mathlib.Algebra.Ring.Defs: 2
+  Mathlib.Algebra.Field.Defs: 3
+  Mathlib.FieldTheory.Galois.Basic: 5
+  Mathlib.FieldTheory.Galois.Abelian: 5
+  Mathlib.FieldTheory.Galois.GaloisClosure: 5
+  Mathlib.FieldTheory.Galois.Infinite: 5
+  Mathlib.FieldTheory.Galois.IsGaloisGroup: 5
+  Mathlib.FieldTheory.Galois.NormalBasis: 5
+  Mathlib.FieldTheory.Galois.Notation: 5
+  Mathlib.FieldTheory.Galois.Profinite: 5
+  Mathlib.FieldTheory.Finite.GaloisField: 5
+  Mathlib.RingTheory.Invariant.Galois: 5
+  Mathlib.NumberTheory.NumberField.Cyclotomic.Galois: 5
+  Mathlib.NumberTheory.RamificationInertia.Galois: 5

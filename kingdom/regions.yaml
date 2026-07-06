@@ -1,0 +1,191 @@
+# 数学王国地图 —— 山脉(区域)定义表
+#
+# 这是对 script/gen_graph.py 里 color_and_rest_v 表的粗化重组:
+# 把原来"每个 mathlib 顶层命名空间一个主题"的 26 条细分,合并成更少的
+# "山脉",让每座山脉能装下一整条从具体到抽象的阶梯(大海拔 tier 0..tier_count-1)。
+#
+# 字段说明:
+#   id                 区域唯一标识,用作 kingdom_data.json 里 node.region_id 的取值
+#   name               显示名称
+#   color              十六进制颜色,沿用原表配色习惯
+#   namespace_prefixes 一个节点只要以 "Mathlib.<prefix>." 开头就归入这个区域
+#                      (与 gen_graph.py 里 get_group 的匹配方式一致);
+#                      列表里第一个匹配到的区域生效,自上而下优先级从高到低
+#   is_summit_layer    true 表示这是悬浮在其他山脉之上的"天空层"(目前只有范畴论),
+#                      天空层节点不参与 map_center 的自身定位,而是取其主要依赖方
+#                      区域的加权质心,macro_tier 会被强制抬到所有地面山脉之上
+#   tier_count         这座山脉的大海拔(macro_tier)层数,用于分位数分箱
+#   is_meta            可选,默认 false。true 表示这不是数学内容本身,而是
+#                      元编程/证明战术工具箱(目前只有 Tactic),
+#                      渲染器可以选择用不同的视觉风格(比如画成工坊而非山脉)
+#
+# 匹配不到下面任何前缀的节点,一律落入代码里硬编码的 fallback 区域 "frontier"
+# (未知边境),不需要在这里单独列出。
+
+regions:
+  - id: algebra
+    name: "代数山"
+    color: "#ffff00"
+    namespace_prefixes:
+      - Algebra
+      - GroupTheory
+      - RingTheory
+      - FieldTheory
+      - RepresentationTheory
+      - NumberTheory
+      - LinearAlgebra
+    is_summit_layer: false
+    tier_count: 6
+
+  - id: category_theory
+    name: "范畴天空"
+    color: "#80a0ff"
+    namespace_prefixes:
+      - CategoryTheory
+    is_summit_layer: true
+    tier_count: 4
+
+  - id: topology
+    name: "拓扑山"
+    color: "#ff00ff"
+    namespace_prefixes:
+      - Topology
+    is_summit_layer: false
+    tier_count: 6
+
+  - id: analysis
+    name: "分析山"
+    color: "#00ffff"
+    namespace_prefixes:
+      - Analysis
+    is_summit_layer: false
+    tier_count: 6
+
+  - id: measure_theory
+    name: "测度之泽"
+    color: "#8000ff"
+    namespace_prefixes:
+      - MeasureTheory
+    is_summit_layer: false
+    tier_count: 5
+
+  - id: probability
+    name: "概率之海"
+    color: "#0000ff"
+    namespace_prefixes:
+      - Probability
+    is_summit_layer: false
+    tier_count: 4
+
+  - id: dynamics
+    name: "动力学山"
+    color: "#008040"
+    namespace_prefixes:
+      - Dynamics
+    is_summit_layer: false
+    tier_count: 4
+
+  - id: combinatorics
+    name: "组合山"
+    color: "#800000"
+    namespace_prefixes:
+      - Combinatorics
+    is_summit_layer: false
+    tier_count: 5
+
+  - id: order
+    name: "序理论丘陵"
+    color: "#804000"
+    namespace_prefixes:
+      - Order
+    is_summit_layer: false
+    tier_count: 4
+
+  - id: logic_set_theory
+    name: "逻辑与集合基石"
+    color: "#0080ff"
+    namespace_prefixes:
+      - Logic
+      - SetTheory
+    is_summit_layer: false
+    tier_count: 4
+
+  - id: foundations_data
+    name: "基础数据平原"
+    color: "#404040"
+    namespace_prefixes:
+      - Data
+      - Init
+      - Deprecated
+      - Mathport
+    is_summit_layer: false
+    tier_count: 3
+
+  - id: algebraic_geometry
+    name: "代数几何山"
+    color: "#6040ff"
+    namespace_prefixes:
+      - AlgebraicGeometry
+    is_summit_layer: false
+    tier_count: 5
+
+  - id: algebraic_topology
+    name: "代数拓扑山"
+    color: "#ff80ff"
+    namespace_prefixes:
+      - AlgebraicTopology
+    is_summit_layer: false
+    tier_count: 5
+
+  - id: geometry
+    name: "几何山"
+    color: "#ff8080"
+    namespace_prefixes:
+      - Geometry
+    is_summit_layer: false
+    tier_count: 5
+
+  - id: computability
+    name: "可计算性山"
+    color: "#bfff00"
+    namespace_prefixes:
+      - Computability
+    is_summit_layer: false
+    tier_count: 4
+
+  - id: model_theory
+    name: "模型论山"
+    color: "#4080ff"
+    namespace_prefixes:
+      - ModelTheory
+    is_summit_layer: false
+    tier_count: 4
+
+  - id: condensed
+    name: "凝聚层塔"
+    color: "#ff0000"
+    namespace_prefixes:
+      - Condensed
+    is_summit_layer: false
+    tier_count: 3
+
+  - id: information_theory
+    name: "信息论山"
+    color: "#8000ff"
+    namespace_prefixes:
+      - InformationTheory
+    is_summit_layer: false
+    tier_count: 3
+
+  - id: tactic
+    name: "战术工坊"
+    color: "#404080"
+    namespace_prefixes:
+      - Tactic
+    is_summit_layer: false
+    tier_count: 2
+    is_meta: true
+
+# fallback 区域,代码里硬编码使用,不在上面 regions 列表中出现:
+#   id: frontier, name: "未知边境", color: "#202020",
+#   is_summit_layer: false, tier_count: 3
