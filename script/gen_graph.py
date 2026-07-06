@@ -37,8 +37,14 @@ G = nx.DiGraph()
 with open(graph_path, 'r') as f:
   for line in f:
     if line.startswith('  '):
-      src, dst = line.strip().split(' -> ')
-      G.add_edge(src[1:-1], dst[1:-2])
+      stripped = line.strip()
+      if ' -> ' in stripped:
+        src, dst = stripped.split(' -> ')
+        G.add_edge(src[1:-1], dst[1:-2])
+      else:
+        # isolated node declaration with no outgoing edges, e.g.
+        # "Mathlib.X.Y" [shape=ellipse];
+        G.add_node(stripped.split('"')[1])
 
 G.remove_node('Mathlib')
 
