@@ -51,6 +51,9 @@
 | `macro_tier_override` | int \| `null` | 非 `null` 时表示这个层级来自 `kingdom/tier_overrides.yaml` 的人工指定,而不是启发式计算 |
 | `x`, `z` | float | 节点在地图平面上的坐标。地面山脉节点:`map_center` + 一个半径不超过 `footprint_radius` 的局部极坐标偏移(半径 = 归一化的 `micro_elevation`,角度 = 节点名的稳定哈希),保证同一座山的所有节点都落在它自己的 `footprint_radius` 圆内,不会侵入相邻山脉。天空层节点:其**依赖方各区域 `map_center` 按引用次数加权的质心**——被代数大量引用的范畴论节点,坐标会漂移到代数山上空 |
 | `size` | float | 节点大小,直接复用 `gen_graph.py` 里已经在算的全局反向 PageRank 半径公式 |
+| `title` | string \| `null` | 从 mathlib4 源码里对应 `.lean` 文件的模块级 `/-! ... -/` 文档注释中提取的标题(真实内容,不是生成的)。文件不存在或没有模块文档时为 `null` |
+| `summary` | string \| `null` | 同一个文档注释里标题之后的正文,截到下一个 `##` 子标题之前,并裁剪到 `SUMMARY_MAX_LEN`(420 字符)。同样是真实的 mathlib 源码内容 |
+| `doc_url` | string | 对应的 [mathlib4_docs](https://leanprover-community.github.io/mathlib4_docs/) 页面链接,按 `id` 里的点号转斜杠拼出来,不依赖 `title`/`summary` 是否提取成功,总是有值 |
 
 ### `edges[]` —— import 依赖
 

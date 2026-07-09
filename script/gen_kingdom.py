@@ -41,6 +41,38 @@ SKY_BASE_TIER = 100  # any summit-layer macro_tier is offset above this
 LOCAL_SPREAD_FACTOR = 2.6  # per-region footprint radius = this * sqrt(node_count)
 MOUNTAIN_MARGIN = 10.0  # minimum gap kept between any two mountains' footprints
 GOLDEN_ANGLE = math.pi * (3 - math.sqrt(5))
+MATHLIB_DOCS_BASE = 'https://leanprover-community.github.io/mathlib4_docs/'
+SUMMARY_MAX_LEN = 420
+MODULE_DOC_RE = re.compile(r'/-!(.*?)-/', re.S)
+
+
+def module_doc(node_id):
+    """Pull the module's own `/-! ... -/` doc-string straight out of the
+    mathlib4 source (real content, not a fabricated description), plus the
+    corresponding mathlib4_docs URL. Returns (title, summary, doc_url)."""
+    rel_path = node_id.replace('.', '/') + '.lean'
+    doc_url = MATHLIB_DOCS_BASE + rel_path[:-len('.lean')] + '.html'
+    abs_path = os.path.join(mathlib_src_path, rel_path)
+    if not os.path.exists(abs_path):
+        return None, None, doc_url
+    with open(abs_path, encoding='utf-8', errors='ignore') as f:
+        text = f.read(6000)
+    m = MODULE_DOC_RE.search(text)
+    if not m:
+        return None, None, doc_url
+    kept_lines = []
+    for line in m.group(1).split('\n'):
+        if line.strip().startswith('##'):
+            break
+        kept_lines.append(line)
+    kept = '\n'.join(kept_lines)
+    title_m = re.match(r'\s*#\s*(.+)', kept)
+    title = title_m.group(1).strip() if title_m else None
+    body = re.sub(r'^\s*#\s*.+', '', kept, count=1)
+    body = re.sub(r'\s+', ' ', body).strip()
+    if len(body) > SUMMARY_MAX_LEN:
+        body = body[:SUMMARY_MAX_LEN].rsplit(' ', 1)[0] + '…'
+    return title, (body or None), doc_url
 
 
 # ---------------------------------------------------------------------------
@@ -318,6 +350,7 @@ nodes_out = []
 for n, d in node_data.items():
     rank = page_rank[n]
     size = 0.2 + 3 * ((rank - pr_min) / (pr_max - pr_min)) ** 0.5 if pr_max > pr_min else 0.2
+    title, summary, doc_url = module_doc(n)
     nodes_out.append({
         'id': n,
         'region_id': d['region_id'],
@@ -328,6 +361,9 @@ for n, d in node_data.items():
         'x': round(d['x'], 3),
         'z': round(d['z'], 3),
         'size': round(size, 4),
+        'title': title,
+        'summary': summary,
+        'doc_url': doc_url,
     })
 
 edges_out = []
