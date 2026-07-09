@@ -37,15 +37,26 @@ Clone this repo:
 git clone https://github.com/Crispher/MathlibExplorer
 ```
 
-Go to the binary folder of your platform:
+Run it with one command from the repo root, picking `2d` for the original bgfx import-graph explorer or `3d` for the experimental [3D "mathematical kingdom" map](./kingdom/):
+
+```
+cd MathlibExplorer
+
+# macOS / Linux
+./run.sh 2d
+./run.sh 3d
+
+# Windows
+run.bat 2d
+run.bat 3d
+```
+
+(There is currently no prebuilt Linux binary for the 2D explorer, only macOS and Windows; `run.sh 2d` will tell you so instead of failing silently. The 3D map only needs a browser and works everywhere.)
+
+Or run the 2D explorer's executable directly:
 
 ```
 cd MathlibExplorer/release/bin_{YOUR_PLATFORM}
-```
-
-Run the executable:
-
-```
 ./MathlibExplorer
 ```
 
